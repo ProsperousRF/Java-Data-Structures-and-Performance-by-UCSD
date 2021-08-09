@@ -5,13 +5,14 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/** A class that represents a text document
+/**
+ * A class that represents a text document
  *
  * @author UC San Diego Intermediate Programming MOOC team
- * */
+ */
 public abstract class Document {
 
-  private String text;
+  private final String text;
 
   /**
    * Create a new document from the given text. Because this class is abstract, this is used only
@@ -100,10 +101,18 @@ public abstract class Document {
    *     should consider y a vowel.
    */
   protected int countSyllables(String word) {
-    // TODO: Implement this method so that you can call it from the
-    // getNumSyllables method in BasicDocument (module 2) and
-    // EfficientDocument (module 3).
-    return 0;
+    String[] tokens = word.split("[^(aeiouyAEIOUY)]+");
+    int syllables = tokens.length;
+    if (tokens.length != 0 && tokens[0].equals("")) {
+      syllables--;
+    }
+    if (syllables != 0) {
+      String last = tokens[tokens.length - 1];
+      if ((word.endsWith("e") || word.endsWith("E")) && last.length() == 1 && syllables > 1) {
+        syllables--;
+      }
+    }
+    return syllables;
   }
 
   /** Return the number of words in this document */
@@ -122,10 +131,8 @@ public abstract class Document {
 
   /** return the Flesch readability score of this document */
   public double getFleschScore() {
-    double words = getNumWords();
-    double sentences = getNumSentences();
-    double syllables = getNumSyllables();
-
-		return 206.835 - (1.015 * (words / sentences)) - (84.6 * (syllables / words));
+    return 206.835
+        - (1.015 * (((double) getNumWords()) / getNumSentences()))
+        - (84.6 * (((double) getNumSyllables()) / getNumWords()));
   }
 }
